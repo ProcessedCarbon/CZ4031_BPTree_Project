@@ -5,28 +5,33 @@
 using namespace std;
 /* Representing a record in the data base */
 struct Record{
-    private:
-        string __movieName;
-        float __avgRating;
-        int __numVotes;
+    // private:
+    //     char __movieId[10]; //explicitly declare the length for easier byte tracking
+    //     // string __movieName;
+    //     float __avgRating;
+    //     int __numVotes;
 
     public:
-        Record(string movieName, float averageRating, int numVotes){
-            __movieName = movieName;
+        Record() = default; //explicitly declare default constructor if no arguments are passed.
+        char __movieId[10]; //explicitly declare the length for easier byte tracking
+        // string __movieName;
+        float __avgRating;
+        int __numVotes;
+        Record(char *movieId, float averageRating, int numVotes){
+            strcpy(movieId, __movieId);
             __avgRating = averageRating;
             __numVotes = numVotes;
         }
-        
         // Getters
         int getRecordSize();
-        string getMovieName();
+        char* getMovieId();
         float getAverageRating();
         int getNumVotes();
 
         // Setter
-        void setRecord(string movieName, float averageRating, int numVotes);
+        void setRecord(char *movieId, float averageRating, int numVotes);
 
-        string RecordStringFormat();
+        // string RecordStringFormat();
 
         ~Record() = default;
 };

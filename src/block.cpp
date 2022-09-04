@@ -17,7 +17,7 @@ void Block::DeleteRecord(float numVotes){
     cout << "Deleting......." << endl;
     for(int i = 0; i < __records.size(); i++){
         if(__records[i].getNumVotes() == numVotes){
-            cout << __records[i].getMovieName() + ": " + to_string(__records[i].getNumVotes()) + "," << endl;
+            // cout << __records[i].getMovieId() + ": " + to_string(__records[i].getNumVotes()) + "," << endl;
             __records.erase(__records.begin() + i);
         }
     }
@@ -44,7 +44,7 @@ int Block::getBlockSize(){
 
 void Block::ShowRecordsInBlock(){
     for (Record r : __records) {
-        cout << r.getMovieName() << " ,";
+        cout << r.getMovieId() << " ,";
     }
     cout << endl;
 }

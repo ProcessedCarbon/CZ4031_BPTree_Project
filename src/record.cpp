@@ -3,15 +3,15 @@
 using namespace std;
 
 int Record::getRecordSize(){
-        return sizeof(__movieName) + sizeof(__avgRating) + sizeof(__numVotes);
+        return sizeof(__movieId) + sizeof(__avgRating) + sizeof(__numVotes);
 }
 
-string Record::RecordStringFormat(){
-    return __movieName + ":" + to_string(__avgRating) + " | " + to_string(__numVotes) + "\n";
-}
+// string Record::RecordStringFormat(){
+//     return __movieId + ":" + to_string(__avgRating) + " | " + to_string(__numVotes) + "\n";
+// }
 
-string Record::getMovieName(){
-    return __movieName;
+char* Record::getMovieId(){
+    return __movieId;
 }
 
 float Record::getAverageRating(){
@@ -22,8 +22,8 @@ int Record::getNumVotes(){
     return __numVotes;
 }
 
-void Record::setRecord(string movieName, float averageRating, int numVotes){
-    __movieName = movieName;
+void Record::setRecord(char *movieId, float averageRating, int numVotes){
+    strcpy(movieId, __movieId);
     __avgRating = averageRating;
     __numVotes = numVotes;
 }
