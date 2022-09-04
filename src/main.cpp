@@ -14,6 +14,7 @@ using namespace std;
 #define NEWLINE '\n'
 #define ROW_DELIMITER '\t'
 
+// main entry point
 int main()
 {
 
@@ -34,11 +35,9 @@ int main()
     cout << "Your selection is: " << BLOCK_SIZE << "B" << endl;
 
   cout <<" ==================================== " << NEWLINE << " READING IN DATA FROM FILE data.tsv" <<endl;
-  ifstream datafile(FILEPATH); // actual data
-  // std::ifstream file("../data/testdata.tsv"); // testing data
+  ifstream datafile(FILEPATH); //read data
   
 
-  // Insert data into database and populate list of addresses
   if (datafile.is_open())
   {
     int recordCounter = 0;
