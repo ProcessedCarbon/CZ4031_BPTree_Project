@@ -43,4 +43,4 @@
 | Gregory      | [ProcessedCarbon](https://github.com/ProcessedCarbon) |
 | Ryan      | [raiseu](https://github.com/raiseu) |
 | Joei    | [jyzy-here](https://github.com/jyzy-here) |
-| Chee Yang    | [raiseu](https://github.com/sleepy-pan-da) |
+| Chee Yang    | [sleepy-pan-da](https://github.com/sleepy-pan-da) |
