@@ -2,6 +2,9 @@
 #define H_RECORD
 
 #include <string>
+
+#define TCONSTSIZE 10 
+
 using namespace std;
 /* Representing a record in the data base */
 struct Record{
@@ -13,7 +16,7 @@ struct Record{
 
     public:
         Record() = default; //explicitly declare default constructor if no arguments are passed.
-        char __movieId[10]; //explicitly declare the length for easier byte tracking
+        char __movieId[TCONSTSIZE]; //explicitly declare the length for easier byte tracking
         // string __movieName;
         float __avgRating;
         int __numVotes;
