@@ -34,8 +34,10 @@ class BPTree{
         }
 
         ~BPTree() = default;
-        void Insert(int numVotes, void * recordAddress);
-        void Delete(int numVotes);
+        void insert(int numVotes, void * recordAddress);
+        void query(int numVotes);
+
+        //void delete(int numVotes);
 
         // Getters
         int getN();

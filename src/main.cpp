@@ -53,7 +53,7 @@ int main()
   ifstream tsvData(FILEPATH); //read data
   
   // cy: initialise B+ tree
-  BPTree bpTree(3);
+  BPTree bpTree(6);
 
   if (tsvData.is_open())
   {
@@ -98,7 +98,7 @@ int main()
       // cout << "Num votes: " << recordAddress->getNumVotes() << endl;
       
       // //logic to insert record into B+ tree
-      bpTree.Insert(recordAddress->getNumVotes(), recordAddress);
+      bpTree.insert(recordAddress->getNumVotes(), recordAddress);
 
 
       ++recordCounter;
@@ -106,6 +106,8 @@ int main()
     }
     tsvData.close();
   }
+
+  bpTree.query(42);
 
   //Print results for Experiment 1 (currently this only includes the records, no index YET...)
   //Pass the Storage disk by address instead of value to avoid creating a new copy which could result in double free errors.

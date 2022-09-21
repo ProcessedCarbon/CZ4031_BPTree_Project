@@ -1,4 +1,4 @@
-#include <iostream>
+//#include <iostream>
 
 #include "bpTree.h"
 #include "treenode.h"
@@ -26,7 +26,7 @@ int BPTree::computeMinNumOfChildrenInNonLeafNodeCeil(float n){
 }
 
 //public
-void BPTree::Insert(int numVotes, void * recordAddress){
+void BPTree::insert(int numVotes, void * recordAddress){
     // Strategy
     // Insertion Step
     // 1. Traverse down to the lowest level (leaf nodes)
@@ -228,11 +228,91 @@ void BPTree::Insert(int numVotes, void * recordAddress){
 
 }
 
+void BPTree::query(int numVotes){
+    if (__root == nullptr)
+    {
+        cout << "Query error: B+ tree has no root" << endl;
+        return;
+    }
 
+    int numOfIndexNodesAccessed = 0;
+    // traverse down the tree till you hit the leaf nodes
+    Node * currNode;
+    currNode = __root;
+    while (!currNode->isLeaf)
+    {
+        numOfIndexNodesAccessed++;
+        
+        // print content of indexNode
+        cout << "Content of index node " << numOfIndexNodesAccessed << endl;
+        for (int i = 0; i < __n; i++)
+        {
+            if (currNode->keys[i] == NULL)
+                break;
+            cout << currNode->keys[i] << " ";
+        }
+        cout << currNode->ptrs[0].blockAddress << " ";
+        for (int i = 1; i <= __n; i++)
+        {
+            if (currNode->ptrs[i].blockAddress == NULL)
+                break;
+            cout << currNode->ptrs[i].blockAddress << " ";
+        }
+        cout << endl;
 
-void BPTree::Delete(int numVotes){
+        // Find the node to traverse from
+        for (int i = 0; i < __n; i++)
+        {
+            if (numVotes < currNode->keys[i] || currNode->keys[i] == NULL)
+            {
+                currNode = (Node *) currNode->ptrs[i].blockAddress;
+                break;
+            }
+
+            // you will hit this if your target value is bigger than all the key values of a fully-filled node
+            if (i == __n-1)
+            {
+                currNode = (Node *) currNode->ptrs[i+1].blockAddress;
+                break;
+            }
+        }
+    }
     
+    cout << "Number of index nodes accessed: " << numOfIndexNodesAccessed << endl;
+    cout << endl;
+
+    int numOfDatablocksAccessed = 0;
+    float sumOfAverageRatings = 0;
+    // hit leaf nodes
+    if (currNode->isLeaf)
+    {
+        for (int i = 0; i < __n; i++)
+        {
+            if (currNode->keys[i] == numVotes)
+            {
+                cout << "You found a movie of " << numVotes << " numVotes!" << endl;
+                Record * recordAddress = (Record *) currNode->ptrs[i].blockAddress;
+                cout << "Movie Id: " << recordAddress->getMovieId() << endl;
+                cout << "Average Rating: " << recordAddress->getAverageRating() << endl;
+                cout << "Num votes: " << recordAddress->getNumVotes() << endl;
+                cout << endl;
+
+                numOfDatablocksAccessed++;
+                sumOfAverageRatings += recordAddress->getAverageRating();
+            }
+            else if (currNode->keys[i] > numVotes)
+            {
+                break;
+            }
+        }
+    }
+    cout << "Number of data blocks accessed: " << numOfDatablocksAccessed << endl;
+    cout << "Average of averageRatings: " << sumOfAverageRatings/numOfDatablocksAccessed << endl;
 }
+
+// void BPTree::delete(int numVotes){
+    
+// }
 
 int BPTree::getN(){
     return __n;
