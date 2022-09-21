@@ -57,6 +57,10 @@ bool Storage::createNewBlock() {
         __blockPtr = (char *)__memoryPtr + (__blockSize * __blocksAllocatedCounter);
         ++__blocksAllocatedCounter;
         __currentBlockSizeUsed = 0; //reset to 0 since a new block is created
+
+        // cy
+        //AddBlock(Block(__blockSize));
+
         return true;
     } else {
         return false; //not enough memory space to create a new block
@@ -105,7 +109,7 @@ tuple<uint, void *> Storage::writeRecordToDb(uint recordSize) {
     /*Here, the address of the record can be retrieved using the following concept:
      Start address of current block(__blockPtr) + address to be offset(__currentBlockSizeUsed) */
     tuple<uint, void*> writtenRecordAddressInfo(__currentBlockSizeUsed, __blockPtr);
-
+    
     __currentBlockSizeUsed += recordSize;
     return writtenRecordAddressInfo;
 

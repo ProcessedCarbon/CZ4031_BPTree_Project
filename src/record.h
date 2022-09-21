@@ -2,6 +2,7 @@
 #define H_RECORD
 
 #include <string>
+#include <cstring>
 
 #define TCONSTSIZE 10 
 

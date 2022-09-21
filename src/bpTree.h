@@ -10,20 +10,46 @@
 
 using namespace std;
 class BPTree{
-    shared_ptr<Node> root;
-    int __treesize;    // max number of keys in a tree node
-    int numNodes;    // number of nodes in this tree
+    private:
+        Node * __root;
+        int __n;    // max number of keys in a tree node
+        int __numNodes;    // number of nodes in this tree
+        int __height;
+        int __minNumOfKeysInLeafNode; // floor((n+1)/2)
+        int __minNumOfChildrenInNonLeafNode; // floor(n/2)+1
+
+        int computeMinNumOfKeysInLeafNode(float n);
+        int computeMinNumOfKeysInLeafNodeCeil(float n);
+        int computeMinNumOfChildrenInNonLeafNode(float n);
+        int computeMinNumOfChildrenInNonLeafNodeCeil(float n);
 
     public:
-        BPTree(int size){
-            __treesize = size;
-            root = nullptr;
-            numNodes = 0;
+        BPTree(int n){ // TODO: n to be determined by size of the block to simulate node being a block
+            __root = nullptr;
+            __n = n;
+            __numNodes = 0;
+            __height = 0;
+            __minNumOfKeysInLeafNode = computeMinNumOfKeysInLeafNode(n);
+            __minNumOfChildrenInNonLeafNode = computeMinNumOfChildrenInNonLeafNode(n);
         }
 
         ~BPTree() = default;
-        void Insert(float numVotes, Block block);
-        void Delete(float numVotes);
+        void Insert(int numVotes, void * recordAddress);
+        void Delete(int numVotes);
+
+        // Getters
+        int getN();
+        int getNumNodes();
+        int getHeight();
+        int getMinNumOfKeysInLeafNode();
+        int getMinNumOfChildrenInNonLeafNode();
+
+        // Helpers
+        bool isNodeFull(Node * currNode);
+        void insertKeyAndAddrToNonFullLeafNode(Node * currNode, int key, void * addr);
+        void insertKeyAndAddrToNonFullParentNode(Node * currNode, Node * newNode);
+        int findIndexOfFullNodeToInsert(Node * currNode, int key);
+        void updateParentNode(Node * currNode, Node * newNode);
 };
 
 #endif    // BPLUSTREE_H

@@ -1,21 +1,30 @@
+#ifndef TREENODE_H
+#define TREENODE_H
+
 #include <memory>
-#include <vector>
+//#include <vector>
 #include <utility>
+
+#include <iostream>
 using namespace std;
 
-struct Node {
-    private:
-        bool __isLeaf;
-        int __size;    // max number of keys in the Node
-    public:
-        Node(bool isLeaf, int size){
-            __isLeaf = isLeaf;
-            __size = size;
-        }
-        //Getters
-        bool getIsLeaf();
-        int getSize();
-        
-        vector<shared_ptr<void>> ptrs; // non-leaf node points to node, leaf node points to vector with shared_ptr of the blocks
-        vector<float> keys;
+// Defines an address of a record stored as a block address with an offset.
+struct Address
+{
+  void *blockAddress;
+  short int offset; // not sure what's the pt of this?
 };
+
+struct Node {
+    public:
+        bool isLeaf;
+        int *keys;
+        Address *ptrs; // can point to either nodes or blocks
+        Address parentAddress; // you need this to traverse back up
+        Node(int n, bool isLeafNode);
+
+        //vector<int> keys;
+        //vector<void *> ptrs; // non-leaf node points to node, leaf node points to vector with shared_ptr of the blocks
+};
+
+#endif

@@ -3,10 +3,11 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-
+#include <cstring>
 
 #include "record.h"
 #include "storage.h"
+#include "bpTree.h"
 
 using namespace std;
 
@@ -14,8 +15,8 @@ typedef unsigned int uint;
 
 //defining constants
 //to change file path to actual data set eventually
-// #define FILEPATH "../data/testdata.tsv"
-#define FILEPATH "../data/data.tsv"
+#define FILEPATH "../data/testdata.tsv"
+//#define FILEPATH "../data/data.tsv"
 #define NEWLINE '\n'
 #define ROW_DELIMITER '\t'
 #define DISK_CAPACITY 500000000 //500,000,000 = 500MB
@@ -51,6 +52,8 @@ int main()
   cout << COUT_LINE_DELIMITER << NEWLINE << "READING IN DATA FROM FILE: data.tsv" << NEWLINE << "Please wait..." << endl;
   ifstream tsvData(FILEPATH); //read data
   
+  // cy: initialise B+ tree
+  BPTree bpTree(3);
 
   if (tsvData.is_open())
   {
@@ -86,8 +89,17 @@ int main()
 
       //insert record into database
       tuple<uint, void *> recordAddressInfo = disk.writeRecordToDb(sizeof(record));
-
+      
+      // cy: write record into disk
+      Record * recordAddress = (Record *) (get<1>(recordAddressInfo) + get<0>(recordAddressInfo));
+      memcpy(recordAddress, &record, sizeof(record));
+      // cout << "Movie Id: " << recordAddress->getMovieId() << endl;
+      // cout << "Average Rating: " << recordAddress->getAverageRating() << endl;
+      // cout << "Num votes: " << recordAddress->getNumVotes() << endl;
+      
       // //logic to insert record into B+ tree
+      bpTree.Insert(recordAddress->getNumVotes(), recordAddress);
+
 
       ++recordCounter;
       // cout << "Record number " << recordCounter << " has been inserted." << endl;
