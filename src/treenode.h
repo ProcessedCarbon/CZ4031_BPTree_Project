@@ -12,7 +12,7 @@ using namespace std;
 struct Address
 {
   void *blockAddress;
-  short int offset; // not sure what's the pt of this?
+  //short int offset; // not sure what's the pt of this?
 };
 
 struct Node {

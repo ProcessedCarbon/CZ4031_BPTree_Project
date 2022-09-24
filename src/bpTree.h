@@ -36,7 +36,8 @@ class BPTree{
         ~BPTree() = default;
         void insert(int numVotes, void * recordAddress);
         void query(int numVotes);
-
+        void queryRangeInclusively(int startNumVotes, int endNumVotes);
+        void remove(int numVotes);
         //void delete(int numVotes);
 
         // Getters
@@ -48,10 +49,20 @@ class BPTree{
 
         // Helpers
         bool isNodeFull(Node * currNode);
+        int getNumOfKeysInNode(Node * currNode);
+        int getNumOfChildrenInNonLeafNode(Node * currNode);
         void insertKeyAndAddrToNonFullLeafNode(Node * currNode, int key, void * addr);
         void insertKeyAndAddrToNonFullParentNode(Node * currNode, Node * newNode);
         int findIndexOfFullNodeToInsert(Node * currNode, int key);
         void updateParentNode(Node * currNode, Node * newNode);
+        void updateParentNodeAfterRecordDeletion(Node * affectedLeafNode, Node * currNode);
+        void updateParentNodeAfterLosingChild(Node * parentNode);
+        bool borrowedFromSiblingLeafNodeIfPossible(Node * currNode);
+        bool mergedWithSiblingLeafNodeIfPossible(Node * currNode);
+        bool borrowedFromSiblingNonLeafNodeIfPossible(Node * currNode);
+        Node * mergedWithSiblingNonLeafNodeIfPossible(Node * currNode); // merges and returns affected parent node
+        void printBpTreeInfoSummary();
+        void printBpTreeInfo();
 };
 
 #endif    // BPLUSTREE_H

@@ -11,7 +11,7 @@ Node::Node(int n, bool isLeafNode)
     ptrs = new Address[n + 1];
     isLeaf = isLeafNode;
 
-    Address nullAddress{nullptr, 0};
+    Address nullAddress{nullptr};
     for (int i = 0; i< n + 1; i++){
         ptrs[i] = nullAddress;
     }

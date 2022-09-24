@@ -53,7 +53,7 @@ int main()
   ifstream tsvData(FILEPATH); //read data
   
   // cy: initialise B+ tree
-  BPTree bpTree(6);
+  BPTree bpTree(3);
 
   if (tsvData.is_open())
   {
@@ -106,8 +106,61 @@ int main()
     }
     tsvData.close();
   }
+  
+  //bpTree.printBpTreeInfoSummary();
 
-  bpTree.query(42);
+  //bpTree.query(500);
+  //bpTree.queryRangeInclusively(30000, 40000);
+
+  //bpTree.remove(1000);
+  //bpTree.printBpTreeInfoSummary();
+
+  // bpTree.remove(10);
+  bpTree.printBpTreeInfo();
+  bpTree.query(31);
+
+  int userInput;
+  while (true)
+  {
+    cout << "Choose numvote value to delete: " << endl;
+    cin >> userInput;
+    cout << endl;
+    bpTree.remove(userInput);
+    bpTree.printBpTreeInfo();
+  }
+
+  // bpTree.remove(11);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(21);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(22);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(42);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(19);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(20);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(31);
+  // bpTree.printBpTreeInfo();
+
+  // bpTree.remove(17);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(5);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(12);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(25);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(18);
+  // bpTree.printBpTreeInfo();
+  // bpTree.remove(28);
+  // bpTree.printBpTreeInfo();
+
+  // bpTree.remove(24);
+  // bpTree.printBpTreeInfo();
+  //bpTree.queryRangeInclusively(1, 42);
+  
 
   //Print results for Experiment 1 (currently this only includes the records, no index YET...)
   //Pass the Storage disk by address instead of value to avoid creating a new copy which could result in double free errors.
