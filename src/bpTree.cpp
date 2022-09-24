@@ -548,10 +548,15 @@ void BPTree::insertKeyAndAddrToNonFullLeafNode(Node * currNode, int key, void * 
 // TODO: find out if this is a fluke
 // find somewhere to insert to ensure keys are sorted
 void BPTree::insertKeyAndAddrToNonFullParentNode(Node * parentNode, Node * newNode){
-    int keyValueToInsert = newNode->keys[0];
     
-    if (keyValueToInsert == 20)
-        cout << "this is it!" << endl;
+    Node * childLeafNode = newNode;
+    while (!childLeafNode->isLeaf)
+    {
+        Node * newChildNode = (Node *) childLeafNode->ptrs[0].blockAddress;
+        childLeafNode = newChildNode;
+    }
+    // smallest value in the right subtree of the parent node
+    int keyValueToInsert = childLeafNode->keys[0];
 
     for (int i = 0; i < __n; i++)
     {
@@ -780,7 +785,7 @@ void BPTree::updateParentNode(Node * currNode, Node * newNode){
             // this is done to make life easier
             newNode->ptrs[0].blockAddress = tempNode->ptrs[pivotIndex+1].blockAddress;
 
-            
+            newNode->parentAddress = parentNode->parentAddress;
 
             // this is to update it's child of it's new parent due to creation of new parent
             Node * currChildNode = (Node *) newNode->ptrs[0].blockAddress;
@@ -1106,8 +1111,14 @@ bool BPTree::mergedWithSiblingLeafNodeIfPossible(Node * currNode){
 
         // might need to update parent node's key as well if it is min value of right subtree
         // recursion is needed here since the first key might be affected 
-        // Node * affectedLeafNode = currNode;
-        // updateParentNodeAfterRecordDeletion(affectedLeafNode, currNode);
+        Node * affectedLeafNode = currNode;
+        while (!affectedLeafNode->isLeaf)
+        {
+            Node * newLeaf = (Node *) affectedLeafNode->ptrs[0].blockAddress;
+            affectedLeafNode = newLeaf;
+        }
+
+        updateParentNodeAfterRecordDeletion(affectedLeafNode, currNode);
         return true;
     }
     return false;

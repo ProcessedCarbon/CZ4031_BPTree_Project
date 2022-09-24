@@ -117,6 +117,7 @@ int main()
 
   // bpTree.remove(10);
   bpTree.printBpTreeInfo();
+  //bpTree.query(29);
   bpTree.query(31);
 
   int userInput;
@@ -127,6 +128,8 @@ int main()
     cout << endl;
     bpTree.remove(userInput);
     bpTree.printBpTreeInfo();
+    // bpTree.query(25);
+    // bpTree.query(42);
   }
 
   // bpTree.remove(11);
