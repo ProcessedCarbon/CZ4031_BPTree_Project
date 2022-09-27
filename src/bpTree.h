@@ -4,26 +4,45 @@
 #include <memory>
 #include <vector>
 #include <utility>
+#include <stack>
+#include <typeinfo>
 
 #include "treenode.h"
 #include "block.h"
 
 using namespace std;
-class BPTree{
-    shared_ptr<Node> root;
-    int __treesize;    // max number of keys in a tree node
-    int numNodes;    // number of nodes in this tree
 
-    public:
-        BPTree(int size){
-            __treesize = size;
-            root = nullptr;
-            numNodes = 0;
-        }
+class BPTree
+{
+public:
+    int MAX = 3;
+    Node *root;
+    BPTree(int MAXKEYS)
+    {
+        root = NULL;
+        MAX = MAXKEYS;
+    }
 
-        ~BPTree() = default;
-        void Insert(float numVotes, Block block);
-        void Delete(float numVotes);
+    ~BPTree() = default;
+    void Insert(int numVotes, void *recordptr);
+    void InsertInternal(int numVotes, Node *curr, Node *child);
+    Node *FindParent(Node *curr, Node *child);
+    void DisplayTree(Node *curr);
+    void *Search(int numVotes);
+    int SearchKey(int numVotes);
+    int *SearchRangeKey(int min, int max);
+    void Delete(int numVotes);
+    int getHeight();
+    Node *getParent(Node *child, int numVotes);
+    void AssignAllParents(Node *curr);
+    void setNewRoot();
+    void DeleteAndCheckNewRoot(int numVotes);
+    void InsertWithAssignParents(int numVotes, void *recordptr);
+    void CheckRootKeys();
+    int getNumNodes();
+    int computeNumNodesInTree();
 };
 
-#endif    // BPLUSTREE_H
+
+
+#endif // BPLUSTREE_H

@@ -16,18 +16,18 @@ struct Block {
         vector<Record> __records;
 
         Block(int blockSize){
-            blockSize = __blockSize;
+            __blockSize = blockSize;
         }
 
         void AddRecord(Record record);
 
-        void DeleteRecord(float numVotes);
+        void DeleteRecord(int numVotes);
 
         // Getters
         int getNumRecord();
         int getBlockSize();
 
-        vector<Record> FindRecords(float numVotes);
+        vector<Record> FindRecords(int numVotes);
 
         void ShowRecordsInBlock();
 

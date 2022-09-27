@@ -8,7 +8,7 @@ void Block::AddRecord(Record record){
     __records.push_back(record);
 }
 
-void Block::DeleteRecord(float numVotes){
+void Block::DeleteRecord(int numVotes){
     if(__records.size() == 0){
         cerr << "[ERROR] Unable to delete record, no records avaliable" << endl;
         return;
@@ -23,7 +23,7 @@ void Block::DeleteRecord(float numVotes){
     }
 }
 
-vector<Record> Block::FindRecords(float numVotes){
+vector<Record> Block::FindRecords(int numVotes){
     vector<Record> foundRecords;
     for (Record r : __records) {
         if (r.getNumVotes() == numVotes) {

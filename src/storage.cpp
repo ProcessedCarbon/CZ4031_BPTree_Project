@@ -54,9 +54,10 @@ bool isSpaceInMemory(uint memorySize, uint totalBlockSizeUsed, uint blockSize) {
 bool Storage::createNewBlock() {
     if (isSpaceInMemory(__memorySize, __totalBlockSizeUsed, __blockSize)) {
         __totalBlockSizeUsed += __blockSize;
-        __blockPtr = (char *)__memoryPtr + (__blockSize * __blocksAllocatedCounter);
+        __blockPtr = (char*)__memoryPtr + (__blockSize * __blocksAllocatedCounter);
         ++__blocksAllocatedCounter;
         __currentBlockSizeUsed = 0; //reset to 0 since a new block is created
+
         return true;
     } else {
         return false; //not enough memory space to create a new block
@@ -79,7 +80,27 @@ bool isSpaceInBlock(uint blockSize, uint currentBlockSizeUsed, uint recordSize) 
         return false;
     }
 }
+tuple<uint, void *> Storage::writeRecordToDb2(uint recordSize) {
 
+    if (!isSpaceInBlock(__blockSize, __currentBlockSizeUsed, recordSize) || __blocksAllocatedCounter == 0) {
+        bool isBlockCreated = createNewBlock();
+        if (!isBlockCreated) {
+            cout << "There is no more space in the memory allocated to create a new block" << endl;
+            throw "There is no more space in the memory allocated to create a new block";
+        }
+    } else if (!(recordSize <= __blockSize)) {
+        cout << "The record size is larger than block size and cannot be written" << endl;
+        throw "The record size is larger than block size and cannot be written";
+    }
+    __totalRecordSizeUsed += recordSize;
+
+    /*Here, the address of the record can be retrieved using the following concept:
+     Start address of current block(__blockPtr) + address to be offset(__currentBlockSizeUsed) */
+    tuple<uint, void*> writtenRecordAddressInfo(__currentBlockSizeUsed, __blockPtr);
+
+    __currentBlockSizeUsed += recordSize;
+    return writtenRecordAddressInfo;
+}
 /**
  * @brief Writes the record to the database if there is enough space in the block to 
  * accomodate the record.
@@ -108,7 +129,6 @@ tuple<uint, void *> Storage::writeRecordToDb(uint recordSize) {
 
     __currentBlockSizeUsed += recordSize;
     return writtenRecordAddressInfo;
-
 }
 
 uint Storage::getNumberOfBlocks() {

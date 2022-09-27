@@ -14,7 +14,6 @@ struct Storage {
 
         int __blocksAccessedCounter; //counter for number of blocks accessed
         int __blocksAllocatedCounter; //counter for number of blocks that have been allocated
-
         
         uint __currentBlockSizeUsed; //size in B used up in the current block being pointed to
         uint __totalBlockSizeUsed; //size in B of utilised storage based on blocks
@@ -24,7 +23,7 @@ struct Storage {
 
         void *__memoryPtr; //pointer to the starting address of allocated memory
         void *__blockPtr; //pointer to the starting address of the current block inside the allocated memory
-    
+
     public:
         /**
          * @brief Construct a new Storage object using the default constructor.
@@ -32,15 +31,19 @@ struct Storage {
          */
         Storage() = default;
         Storage(uint blockSize, uint memorySize);
-
+        
         bool createNewBlock();
         tuple<uint, void *> writeRecordToDb(uint recordSize);
+        tuple<uint, void *> writeRecordToDb2(uint recordSize);
+
+        void writeRecordToDisk(Record r);
         uint getNumberOfBlocks();
         uint getDatabaseSizeBasedOnBlocks();
         uint getDatabaseSizeBasedOnRecords();
         
         vector<Block> __blocks;  // Shared pointer used to automatically destroy block when it is empty
         void AddBlock(Block block);
+
         // Getters
         int getNumBlocks();
         int getNumRecords();
