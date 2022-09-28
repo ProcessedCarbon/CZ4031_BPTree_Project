@@ -17,6 +17,7 @@ class BPTree{
         int __height;
         int __minNumOfKeysInLeafNode; // floor((n+1)/2)
         int __minNumOfChildrenInNonLeafNode; // floor(n/2)+1
+        int __entriesInOverflowBlock;
 
         int computeMinNumOfKeysInLeafNode(float n);
         int computeMinNumOfKeysInLeafNodeCeil(float n);
@@ -24,13 +25,14 @@ class BPTree{
         int computeMinNumOfChildrenInNonLeafNodeCeil(float n);
 
     public:
-        BPTree(int n){ // TODO: n to be determined by size of the block to simulate node being a block
+        BPTree(int n, int entries){ // TODO: n to be determined by size of the block to simulate node being a block
             __root = nullptr;
             __n = n;
             __numNodes = 0;
             __height = 0;
             __minNumOfKeysInLeafNode = computeMinNumOfKeysInLeafNode(n);
             __minNumOfChildrenInNonLeafNode = computeMinNumOfChildrenInNonLeafNode(n);
+            __entriesInOverflowBlock = entries;
         }
 
         ~BPTree() = default;
@@ -52,6 +54,7 @@ class BPTree{
         int getNumOfKeysInNode(Node * currNode);
         int getNumOfChildrenInNonLeafNode(Node * currNode);
         void insertKeyAndAddrToNonFullLeafNode(Node * currNode, int key, void * addr);
+        void shiftKeyAndAddrToNonFullLeafNode(Node * currNode, int key, void * addr);
         void insertKeyAndAddrToNonFullParentNode(Node * currNode, Node * newNode);
         int findIndexOfFullNodeToInsert(Node * currNode, int key);
         void updateParentNode(Node * currNode, Node * newNode);

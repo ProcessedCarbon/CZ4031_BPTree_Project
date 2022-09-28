@@ -3,6 +3,7 @@
 #include "bpTree.h"
 #include "treenode.h"
 #include "record.h"
+#include "overflowBlock.h"
 
 #include <cmath>
 //using namespace std;
@@ -40,7 +41,9 @@ void BPTree::insert(int numVotes, void * recordAddress){
         // create first node
         __root = new Node(__n, true);
         __root->keys[0] = numVotes;
-        __root->ptrs[0].blockAddress = recordAddress;
+        OverflowBlock * overflowBlock = new OverflowBlock(__entriesInOverflowBlock);
+        __root->ptrs[0].blockAddress = overflowBlock;
+        overflowBlock->recordAddresses[0].blockAddress = recordAddress;
 
         __numNodes = 1;
         __height = 1;
@@ -89,8 +92,12 @@ void BPTree::insert(int numVotes, void * recordAddress){
                 
                 // create a temp node to store all the keys and ptrs in sorted order
                 Node * tempNode = new Node(__n+1, true);
+
+                // create new overflowBlock
+                OverflowBlock * overflowBlock = new OverflowBlock(__entriesInOverflowBlock);
                 tempNode->keys[indexToInsert] = numVotes;
-                tempNode->ptrs[indexToInsert].blockAddress = recordAddress;
+                tempNode->ptrs[indexToInsert].blockAddress = overflowBlock;
+                overflowBlock->recordAddresses[0].blockAddress = recordAddress;
 
                 int currNodeIndex = 0;
                 // iterate thru tempNode to populate
@@ -227,15 +234,32 @@ void BPTree::query(int numVotes){
         {
             if (currNode->keys[i] == numVotes)
             {
-                cout << "You found a movie of " << numVotes << " numVotes!" << endl;
-                Record * recordAddress = (Record *) currNode->ptrs[i].blockAddress;
-                cout << "Movie Id: " << recordAddress->getMovieId() << endl;
-                cout << "Average Rating: " << recordAddress->getAverageRating() << endl;
-                cout << "Num votes: " << recordAddress->getNumVotes() << endl;
-                cout << endl;
+                OverflowBlock * overflowBlock = (OverflowBlock *) currNode->ptrs[i].blockAddress;
+                int j = 0;
 
-                numOfDatablocksAccessed++;
-                sumOfAverageRatings += recordAddress->getAverageRating();
+                while (overflowBlock->recordAddresses[j].blockAddress != NULL)
+                {
+                    cout << "You found a movie of " << numVotes << " numVotes!" << endl;
+                    Record * recordAddress = (Record *) overflowBlock->recordAddresses[j].blockAddress;
+                    cout << "Movie Id: " << recordAddress->getMovieId() << endl;
+                    cout << "Average Rating: " << recordAddress->getAverageRating() << endl;
+                    cout << "Num votes: " << recordAddress->getNumVotes() << endl;
+                    cout << endl;
+
+                    numOfDatablocksAccessed++;
+                    sumOfAverageRatings += recordAddress->getAverageRating();
+                    
+                    j++;
+                    if (j >= __entriesInOverflowBlock)
+                    {
+                        OverflowBlock * temp = (OverflowBlock * ) overflowBlock->next;
+                        if (temp == NULL)
+                            break;
+                        overflowBlock = temp;
+                        j = 0;
+                    }
+                }
+                break;
             }
             else if (currNode->keys[i] > numVotes)
             {
@@ -305,20 +329,46 @@ void BPTree:: queryRangeInclusively(int startNumVotes, int endNumVotes){
     // hit leaf nodes
     if (currNode->isLeaf)
     {
+        // find starting i
         int i = 0;
+        for (int k = 0; k < __n; k++)
+        {
+            if (currNode->keys[k] >= startNumVotes)
+            {
+                i = k;
+                break;
+            }
+        }
+
         while (true)
         {
             if (currNode->keys[i] >= startNumVotes && currNode->keys[i] <= endNumVotes)
             {
-                cout << "You found a movie that lies within the range of " << startNumVotes << " and " << endNumVotes << " numVotes!" << endl;
-                Record * recordAddress = (Record *) currNode->ptrs[i].blockAddress;
-                cout << "Movie Id: " << recordAddress->getMovieId() << endl;
-                cout << "Average Rating: " << recordAddress->getAverageRating() << endl;
-                cout << "Num votes: " << recordAddress->getNumVotes() << endl;
-                cout << endl;
+                OverflowBlock * overflowBlock = (OverflowBlock *) currNode->ptrs[i].blockAddress;
+                int j = 0;
 
-                numOfDatablocksAccessed++;
-                sumOfAverageRatings += recordAddress->getAverageRating();
+                while (overflowBlock->recordAddresses[j].blockAddress != NULL)
+                {
+                    cout << "You found a movie that lies within the range of " << startNumVotes << " and " << endNumVotes << " numVotes!" << endl;
+                    Record * recordAddress = (Record *) overflowBlock->recordAddresses[j].blockAddress;
+                    cout << "Movie Id: " << recordAddress->getMovieId() << endl;
+                    cout << "Average Rating: " << recordAddress->getAverageRating() << endl;
+                    cout << "Num votes: " << recordAddress->getNumVotes() << endl;
+                    cout << endl;
+
+                    numOfDatablocksAccessed++;
+                    sumOfAverageRatings += recordAddress->getAverageRating();
+
+                    j++;
+                    if (j >= __entriesInOverflowBlock)
+                    {
+                        OverflowBlock * temp = (OverflowBlock * ) overflowBlock->next;
+                        if (temp == NULL)
+                            break;
+                        overflowBlock = temp;
+                        j = 0;
+                    }
+                }
 
                 if (currNode->keys[i+1] != NULL)
                     i++;
@@ -402,10 +452,10 @@ void BPTree::remove(int numVotes){
                 }
                     
                 cout << "You found a movie of " << numVotes << " numVotes to remove!" << endl;
-                Record * recordAddress = (Record *) currNode->ptrs[i].blockAddress;
-                cout << "Movie Id: " << recordAddress->getMovieId() << endl;
-                cout << "Average Rating: " << recordAddress->getAverageRating() << endl;
-                cout << "Num votes: " << recordAddress->getNumVotes() << endl;
+                // Record * recordAddress = (Record *) currNode->ptrs[i].blockAddress;
+                // cout << "Movie Id: " << recordAddress->getMovieId() << endl;
+                // cout << "Average Rating: " << recordAddress->getAverageRating() << endl;
+                // cout << "Num votes: " << recordAddress->getNumVotes() << endl;
                 cout << endl;
 
                 currNode->keys[i] = NULL;
@@ -513,7 +563,84 @@ int BPTree::getNumOfChildrenInNonLeafNode(Node * currNode){
 }
 
 // find somewhere to insert to ensure keys are sorted
+// involves creation of overflow blocks
 void BPTree::insertKeyAndAddrToNonFullLeafNode(Node * currNode, int key, void * addr){
+    for (int i = 0; i < __n; i++)
+    {
+        if (currNode->keys[i] == NULL){
+            // create new overflowBlock
+            OverflowBlock * overflowBlock = new OverflowBlock(__entriesInOverflowBlock);
+            currNode->keys[i] = key;
+            currNode->ptrs[i].blockAddress = overflowBlock;
+            overflowBlock->recordAddresses[0].blockAddress = addr;
+            cout << "test " << overflowBlock->recordAddresses[0].blockAddress << endl;
+
+            break;
+        }
+        else if (key < currNode->keys[i])
+        {
+            // create new overflowBlock
+            int index_to_decrement_from;
+            for (int j = 0; j < __n; j++)
+            {
+                if (currNode->keys[j] == NULL){
+                    index_to_decrement_from = j;
+                    break;
+                }
+            }
+
+            // shift the remaining keys and ptrs forward to maintain sorted arrays
+            for (int k = index_to_decrement_from; k > i; k--)
+            {
+                currNode->keys[k] = currNode->keys[k-1];
+                currNode->ptrs[k].blockAddress = currNode->ptrs[k-1].blockAddress;
+            }
+
+            OverflowBlock * overflowBlock = new OverflowBlock(__entriesInOverflowBlock);
+            currNode->keys[i] = key;
+            currNode->ptrs[i].blockAddress = overflowBlock;
+            overflowBlock->recordAddresses[0].blockAddress = addr;
+            break;
+        }
+        else if (key == currNode->keys[i])
+        {
+            // overflowBlock exists, search for empty slot to insert
+            OverflowBlock * overflowBlock = (OverflowBlock *) currNode->ptrs[i].blockAddress;
+            for (int i = 0; i < __entriesInOverflowBlock; i++)
+            {
+                if (overflowBlock->recordAddresses[i].blockAddress == NULL)
+                {
+                    overflowBlock->recordAddresses[i].blockAddress = addr;
+                    return;
+                }
+            }
+            // overflowBlock is full, check for next overflowBlock
+            while (overflowBlock->next != NULL)
+            {
+                OverflowBlock * nextOverflowBlock = overflowBlock->next;
+                for (int i = 0; i < __entriesInOverflowBlock; i++)
+                {
+                    if (overflowBlock->recordAddresses[i].blockAddress == NULL)
+                    {
+                        overflowBlock->recordAddresses[i].blockAddress = addr;
+                        return;
+                    }
+                }
+                overflowBlock = nextOverflowBlock;
+            }
+
+            // need to create new overflowblock
+            OverflowBlock * nextOverflowBlock = new OverflowBlock(__entriesInOverflowBlock);
+            overflowBlock->next = nextOverflowBlock;
+            nextOverflowBlock->recordAddresses[0].blockAddress = addr;
+            return;
+        }
+    }
+}
+
+// find somewhere to insert to ensure keys are sorted
+// does not involve creation of overflow blocks
+void BPTree::shiftKeyAndAddrToNonFullLeafNode(Node * currNode, int key, void * addr){
     for (int i = 0; i < __n; i++)
     {
         if (currNode->keys[i] == NULL){
@@ -950,7 +1077,7 @@ bool BPTree::borrowedFromSiblingLeafNodeIfPossible(Node * currNode){
             siblingBefore->ptrs[iOfBorrowedKeyAndAddr].blockAddress = NULL;
 
             // currNode borrows key/addr from sibling before
-            insertKeyAndAddrToNonFullLeafNode(currNode, borrowedKey, borrowedAddr);
+            shiftKeyAndAddrToNonFullLeafNode(currNode, borrowedKey, borrowedAddr);
             
             // recursion is needed here since the first key is affected
             Node * affectedLeafNode = currNode;
@@ -986,7 +1113,7 @@ bool BPTree::borrowedFromSiblingLeafNodeIfPossible(Node * currNode){
             }
 
             // currNode borrows key/addr from sibling after
-            insertKeyAndAddrToNonFullLeafNode(currNode, borrowedKey, borrowedAddr);
+            shiftKeyAndAddrToNonFullLeafNode(currNode, borrowedKey, borrowedAddr);
             
             // recursion is needed here since the first key is affected 
             Node * affectedLeafNode = currNode;
@@ -1038,7 +1165,7 @@ bool BPTree::mergedWithSiblingLeafNodeIfPossible(Node * currNode){
             {
                 break;
             } 
-            insertKeyAndAddrToNonFullLeafNode(siblingBefore, currNode->keys[i], currNode->ptrs[i].blockAddress);
+            shiftKeyAndAddrToNonFullLeafNode(siblingBefore, currNode->keys[i], currNode->ptrs[i].blockAddress);
         }
         siblingBefore->ptrs[__n].blockAddress = currNode->ptrs[__n].blockAddress;
         delete currNode;
@@ -1084,7 +1211,7 @@ bool BPTree::mergedWithSiblingLeafNodeIfPossible(Node * currNode){
             {
                 break;
             } 
-            insertKeyAndAddrToNonFullLeafNode(currNode, siblingAfter->keys[i], siblingAfter->ptrs[i].blockAddress);
+            shiftKeyAndAddrToNonFullLeafNode(currNode, siblingAfter->keys[i], siblingAfter->ptrs[i].blockAddress);
         }
         currNode->ptrs[__n].blockAddress = siblingAfter->ptrs[__n].blockAddress;
         delete siblingAfter;

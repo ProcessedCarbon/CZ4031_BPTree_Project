@@ -22,7 +22,7 @@ struct Node {
         Address *ptrs; // can point to either nodes or blocks
         Address parentAddress; // you need this to traverse back up
         Node(int n, bool isLeafNode);
-
+    
         //vector<int> keys;
         //vector<void *> ptrs; // non-leaf node points to node, leaf node points to vector with shared_ptr of the blocks
 };
